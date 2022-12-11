@@ -13,17 +13,53 @@ public class Tank {
     private int x , y ;
     private Dir dir = Dir.U;
     private boolean bU, bD, bL, bR;
+    private  boolean moving = false;
+    private Group group = Group.GOOD;
     public static final int SPEED = 5;
+    //持有引用
+    TankFrame tf;
 
-
-    public Tank(int x, int y, Dir dir) {
+    public Tank(int x, int y, Dir dir, Group group,TankFrame tf) {
         this.x = x;
         this.y = y;
         this.dir = dir;
+        this.group = group;
+        this.tf = tf;
     }
 
     public void paint(Graphics g) {
-        g.fillRect(x, y, 50, 50);
+        if (this.group == Group.GOOD){
+            switch (dir) {
+                case U:
+                    g.drawImage(ResourceMgr.goodTankU, x, y, null);
+                    break;
+                case R:
+                    g.drawImage(ResourceMgr.goodTankR, x, y, null);
+                    break;
+                case D:
+                    g.drawImage(ResourceMgr.goodTankD, x, y, null);
+                    break;
+                case L:
+                    g.drawImage(ResourceMgr.goodTankL, x, y, null);
+                    break;
+            }
+        }
+        if (this.group == Group.BAD){
+            switch (dir) {
+                case U:
+                    g.drawImage(ResourceMgr.badTankU, x, y, null);
+                    break;
+                case R:
+                    g.drawImage(ResourceMgr.badTankR, x, y, null);
+                    break;
+                case D:
+                    g.drawImage(ResourceMgr.badTankD, x, y, null);
+                    break;
+                case L:
+                    g.drawImage(ResourceMgr.badTankL, x, y, null);
+                    break;
+            }
+        }
         move();
     }
 
@@ -64,13 +100,18 @@ public class Tank {
             case KeyEvent.VK_RIGHT:
                 bR = false;
                 break;
+            case KeyEvent.VK_SPACE:
+                fire();
         }
         setMainDir();
     }
 
+
     private void setMainDir() {
         if(!bU && !bD && !bL && !bR ){
-            return;
+            moving = false;
+        }else{
+            moving = true;
         }
         if(bU && !bD && !bL && !bR ){
             dir = Dir.U;
@@ -84,10 +125,11 @@ public class Tank {
         if(!bU && !bD && !bL && bR ){
             dir = Dir.R;
         }
+
     }
 
     private void move() {
-
+        if (!moving) return;
         switch (dir){
             case U:
                 y -= SPEED;
@@ -104,6 +146,8 @@ public class Tank {
 
         }
     }
-
+    private void fire() {
+       tf.add(new Bullet(x,y,dir,group));
+    }
 
 }

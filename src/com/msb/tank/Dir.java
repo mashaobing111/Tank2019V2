@@ -8,7 +8,7 @@ package com.msb.tank;
  */
 
 public enum Dir {
-    U, D, L, R, ;
+    U, D, L, R;
 }
 /*
 为什么Enum 比 int类型号？
