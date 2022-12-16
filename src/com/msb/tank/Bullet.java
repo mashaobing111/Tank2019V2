@@ -10,20 +10,20 @@ import java.awt.*;
  */
 public class Bullet {
     private  int x, y;
-    private Dir dir;
+    private Direction direction;
     private Group group;
     private boolean living = true;
     public static final int SPEED = 10;
 
-    public Bullet(int x, int y, Dir dir, Group group) {
+    public Bullet(int x, int y, Direction direction, Group group) {
         this.x = x;
         this.y = y;
-        this.dir = dir;
+        this.direction = direction;
         this.group = group;
     }
     public void paint(Graphics g) {
         /*if (!living) TankFrame.INSTANCE.getBullets().remove(this);*/
-        switch (dir) {
+        switch (direction) {
             case U:
                 g.drawImage(ResourceMgr.bulletU, x, y, null);
                 break;
@@ -41,7 +41,7 @@ public class Bullet {
     }
 
     private void move() {
-        switch (dir){
+        switch (direction){
             case U:
                 y -= SPEED;
                 break;

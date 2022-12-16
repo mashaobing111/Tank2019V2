@@ -14,6 +14,7 @@ public class PropertyMgr {
     static {
         try {
             props = new Properties();
+            //通过load方法把config所有的键值对装到内存里
             props.load(PropertyMgr.class.getClassLoader().getResourceAsStream("config"));
         } catch (IOException e) {
             e.printStackTrace();

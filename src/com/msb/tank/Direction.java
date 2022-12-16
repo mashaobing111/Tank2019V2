@@ -9,12 +9,12 @@ import java.util.Random;
  * @version: 1.0
  */
 
-public enum Dir {
+public enum Direction {
     U, D, L, R;
 
     private static Random r = new Random();
-    public static Dir randomDir(){
-        return Dir.values()[r.nextInt(Dir.values().length)];
+    public static Direction randomDir(){
+        return Direction.values()[r.nextInt(Direction.values().length)];
     }
 }
 /*

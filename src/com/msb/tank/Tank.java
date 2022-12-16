@@ -1,7 +1,6 @@
 package com.msb.tank;
 
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.util.Random;
 
 /**
@@ -12,24 +11,21 @@ import java.util.Random;
  */
 public class Tank {
     private int x , y ;
-    private Dir dir = Dir.U;
+    private Direction direction = Direction.U;
     private boolean bU, bD, bL, bR;
     private  boolean moving = true;
     private Group group = Group.GOOD;
     public static final int SPEED = 5;
-    private int tankWidth, tankHeight;
     private  boolean live  = true;
     private  int oldX, oldY;
     private Random random = new Random();
-    public Tank(int x, int y, Dir dir, Group group) {
+    public Tank(int x, int y, Direction direction, Group group) {
         this.x = x;
         this.y = y;
-        this.dir = dir;
+        this.direction = direction;
         this.group = group;
         this.oldX = x;
         this.oldY = y;
-        this.tankWidth = ResourceMgr.goodTankU.getWidth();
-        this.tankHeight =  ResourceMgr.goodTankU.getHeight();
     }
 
     public int getX() {
@@ -54,7 +50,7 @@ public class Tank {
 
     public void paint(Graphics g) {
         if (!this.isLive()) return;
-        switch (dir) {
+        switch (direction) {
             case U:
                 g.drawImage(ResourceMgr.badTankU, x, y, null);
                 break;
@@ -75,7 +71,7 @@ public class Tank {
         if (moving) return;
         oldX = x;
         oldY = y;
-        switch (dir){
+        switch (direction){
             case U:
                 y -= SPEED;
                 break;
@@ -102,13 +98,13 @@ public class Tank {
     }
 
     private void fire() {//开火
-        int bX = x + tankWidth/2 - ResourceMgr.bulletU.getWidth()/2;
-        int bY = y + tankHeight/2 - ResourceMgr.bulletU.getHeight()/2;
-       TankFrame.INSTANCE.add(new Bullet(bX,bY,dir,group));
+        int bX = x + ResourceMgr.goodTankU.getWidth()/2 - ResourceMgr.bulletU.getWidth()/2;
+        int bY = y + ResourceMgr.goodTankU.getHeight()/2 - ResourceMgr.bulletU.getHeight()/2;
+        TankFrame.INSTANCE.add(new Bullet(bX,bY, direction,group));
     }
 
     private void tankBoundsCheck() {//坦克边缘检查
-        if (x < 1 || y < tankHeight -20 || x > TankFrame.INSTANCE.GAME_WIDTH - tankWidth-1 || y > TankFrame.INSTANCE.GAME_HEIGHT - tankHeight-1) {
+        if (x < 1 || y < ResourceMgr.goodTankU.getHeight() -20 || x > TankFrame.INSTANCE.GAME_WIDTH - ResourceMgr.goodTankU.getWidth()-1 || y > TankFrame.INSTANCE.GAME_HEIGHT - ResourceMgr.goodTankU.getHeight()-1) {
             this.back();
         }
 
@@ -121,15 +117,15 @@ public class Tank {
 
     public void die() {
         this.setLive(false);
-        int eX = x + tankWidth/2 - ResourceMgr.explodes[0].getWidth()/2;
-        int eY = y + tankHeight/2 - ResourceMgr.explodes[0].getHeight()/2;
+        int eX = x + ResourceMgr.goodTankU.getWidth()/2 - ResourceMgr.explodes[0].getWidth()/2;
+        int eY = y + ResourceMgr.goodTankU.getHeight()/2 - ResourceMgr.explodes[0].getHeight()/2;
         TankFrame.INSTANCE.add(new Explode(eX, eY));
     }
 
     //随机方向
     private void randomDir(){
         if (random.nextInt(100) >95)
-            this.dir = Dir.randomDir();
+            this.direction = Direction.randomDir();
     }
 
 }

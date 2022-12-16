@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * @author: msb
@@ -47,14 +46,14 @@ public class TankFrame extends Frame {
     }
 
     private void initGameObject() {
-        myTank = new Player(300, 730, Dir.U, Group.GOOD);
+        myTank = new Player(300, 730, Direction.U, Group.GOOD);
         enemyTanks = new ArrayList<>();
         bullets = new ArrayList<>();
         explodes = new ArrayList<>();
 
         int enemyTanksCount = Integer.parseInt(PropertyMgr.get("initTankCount"));
         for (int i = 0; i < enemyTanksCount; i++) {
-            enemyTanks.add(new Tank(100 + i * 100, 50, Dir.D, Group.BAD));
+            enemyTanks.add(new Tank(100 + i * 100, 50, Direction.D, Group.BAD));
         }
     }
 

@@ -1,5 +1,9 @@
 package com.msb.tank;
 
+import com.msb.tank.strategy.DefaultFireStrategy;
+import com.msb.tank.strategy.FireStrategy;
+import com.msb.tank.strategy.FourDirFireStrategy;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.Random;
@@ -11,23 +15,32 @@ import java.util.Random;
  * @version: 1.0
  */
 public class Player {
+    public static final int SPEED = 5;
     private int x , y ;
-    private Dir dir;
+    private Direction direction;
     private boolean bU, bD, bL, bR;
     private  boolean moving = false;
     private Group group;
-    public static final int SPEED = 5;
     private int tankWidth = ResourceMgr.goodTankU.getWidth(), tankHeight =  ResourceMgr.goodTankU.getHeight();
     private  boolean live  = true;
     private Random random = new Random();
+    private FireStrategy fireStrategy;
 
-
-    public Player(int x, int y, Dir dir, Group group) {
+    public Player(int x, int y, Direction direction, Group group) {
         this.x = x;
         this.y = y;
-        this.dir = dir;
+        this.direction = direction;
         this.group = group;
+        //init fire strategy from config file
+        this.initFireStrategy();
+    }
 
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public void setDirection(Direction direction) {
+        this.direction = direction;
     }
 
     public int getX() {
@@ -49,9 +62,10 @@ public class Player {
     public Group getGroup() {
         return group;
     }
+
     public void paint(Graphics g) {
         if (!this.isLive()) return;
-        switch (dir) {
+        switch (direction) {
             case U:
                 g.drawImage(ResourceMgr.goodTankU, x, y, null);
                 break;
@@ -67,7 +81,6 @@ public class Player {
         }
         move();
     }
-
 
     public void keyPressed(KeyEvent e) {
         //获取按下的键值  根据按键给出坦克方向
@@ -114,7 +127,7 @@ public class Player {
     private void move() {
         if (!moving) return;
 
-        switch (dir){
+        switch (direction){
             case U:
                 y -= SPEED;
                 break;
@@ -142,24 +155,37 @@ public class Player {
             moving = true;
         }
         if(bU){
-            dir = Dir.U;
+            direction = Direction.U;
         }
         if(bD){
-            dir = Dir.D;
+            direction = Direction.D;
         }
         if(bL ){
-            dir = Dir.L;
+            direction = Direction.L;
         }
         if(bR ){
-            dir = Dir.R;
+            direction = Direction.R;
         }
 
     }
 
+    private void initFireStrategy(){
+        ClassLoader loader = Player.class.getClassLoader();
+
+        String className = PropertyMgr.get("tankFireStrategy");
+        try {
+            Class clazz = loader.loadClass("com.msb.tank.strategy." + className );
+            fireStrategy = (FireStrategy) (clazz.getDeclaredConstructor().newInstance());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     private void fire() {//开火
-        int bX = x + tankWidth/2 - ResourceMgr.bulletU.getWidth()/2;
-        int bY = y + tankHeight/2 - ResourceMgr.bulletU.getHeight()/2;
-       TankFrame.INSTANCE.add(new Bullet(bX,bY,dir,group));
+        //read config
+        //if default four dir
+        //多态 父类引用指向子类对象
+
+        fireStrategy.fire(this);
     }
 
     private void tankBoundsCheck() {//坦克边缘检查
