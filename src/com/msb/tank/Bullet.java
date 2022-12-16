@@ -8,7 +8,7 @@ import java.awt.*;
  * @description: com.msb.tank
  * @version: 1.0
  */
-public class Bullet {
+public class Bullet extends AbstractGameObject{
     private  int x, y;
     private Direction direction;
     private Group group;

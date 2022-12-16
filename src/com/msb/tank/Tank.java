@@ -9,7 +9,7 @@ import java.util.Random;
  * @description: com.msb.tank
  * @version: 1.0
  */
-public class Tank {
+public class Tank extends AbstractGameObject{
     private int x , y ;
     private Direction direction = Direction.U;
     private boolean bU, bD, bL, bR;

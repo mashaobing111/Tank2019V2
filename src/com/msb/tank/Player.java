@@ -14,7 +14,7 @@ import java.util.Random;
  * @description: com.msb.tank
  * @version: 1.0
  */
-public class Player {
+public class Player extends AbstractGameObject{
     public static final int SPEED = 5;
     private int x , y ;
     private Direction direction;
