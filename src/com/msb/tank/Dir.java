@@ -1,5 +1,7 @@
 package com.msb.tank;
 
+import java.util.Random;
+
 /**
  * @author: msb
  * @date: 2022/12/9 - 12 - 09 - 15:59
@@ -9,6 +11,11 @@ package com.msb.tank;
 
 public enum Dir {
     U, D, L, R;
+
+    private static Random r = new Random();
+    public static Dir randomDir(){
+        return Dir.values()[r.nextInt(Dir.values().length)];
+    }
 }
 /*
 为什么Enum 比 int类型号？

@@ -2,6 +2,7 @@ package com.msb.tank;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.Random;
 
 /**
  * @author: msb
@@ -13,123 +14,67 @@ public class Tank {
     private int x , y ;
     private Dir dir = Dir.U;
     private boolean bU, bD, bL, bR;
-    private  boolean moving = false;
+    private  boolean moving = true;
     private Group group = Group.GOOD;
     public static final int SPEED = 5;
-    //持有引用
-    TankFrame tf;
-
-    public Tank(int x, int y, Dir dir, Group group,TankFrame tf) {
+    private int tankWidth, tankHeight;
+    private  boolean live  = true;
+    private  int oldX, oldY;
+    private Random random = new Random();
+    public Tank(int x, int y, Dir dir, Group group) {
         this.x = x;
         this.y = y;
         this.dir = dir;
         this.group = group;
-        this.tf = tf;
+        this.oldX = x;
+        this.oldY = y;
+        this.tankWidth = ResourceMgr.goodTankU.getWidth();
+        this.tankHeight =  ResourceMgr.goodTankU.getHeight();
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public boolean isLive() {
+        return live;
+    }
+
+    public void setLive(boolean live) {
+        this.live = live;
+    }
+
+    public Group getGroup() {
+        return group;
     }
 
     public void paint(Graphics g) {
-        if (this.group == Group.GOOD){
-            switch (dir) {
-                case U:
-                    g.drawImage(ResourceMgr.goodTankU, x, y, null);
-                    break;
-                case R:
-                    g.drawImage(ResourceMgr.goodTankR, x, y, null);
-                    break;
-                case D:
-                    g.drawImage(ResourceMgr.goodTankD, x, y, null);
-                    break;
-                case L:
-                    g.drawImage(ResourceMgr.goodTankL, x, y, null);
-                    break;
-            }
-        }
-        if (this.group == Group.BAD){
-            switch (dir) {
-                case U:
-                    g.drawImage(ResourceMgr.badTankU, x, y, null);
-                    break;
-                case R:
-                    g.drawImage(ResourceMgr.badTankR, x, y, null);
-                    break;
-                case D:
-                    g.drawImage(ResourceMgr.badTankD, x, y, null);
-                    break;
-                case L:
-                    g.drawImage(ResourceMgr.badTankL, x, y, null);
-                    break;
-            }
+        if (!this.isLive()) return;
+        switch (dir) {
+            case U:
+                g.drawImage(ResourceMgr.badTankU, x, y, null);
+                break;
+            case R:
+                g.drawImage(ResourceMgr.badTankR, x, y, null);
+                break;
+            case D:
+                g.drawImage(ResourceMgr.badTankD, x, y, null);
+                break;
+            case L:
+                g.drawImage(ResourceMgr.badTankL, x, y, null);
+                break;
         }
         move();
     }
 
-
-    public void keyPressed(KeyEvent e) {
-        //获取按下的键值  根据按键给出坦克方向
-        int key = e.getKeyCode();
-        switch (key){
-            case KeyEvent.VK_UP://↑当前键值
-                bU = true;
-                break;
-            case KeyEvent.VK_DOWN:
-                bD = true;
-                break;
-            case KeyEvent.VK_LEFT:
-                bL = true;
-                break;
-            case KeyEvent.VK_RIGHT:
-                bR = true;
-                break;
-        }
-        setMainDir();
-    }
-
-    public void keyReleased(KeyEvent e) {
-        //获取抬起的键值
-        int key = e.getKeyCode();
-        switch (key){
-            case KeyEvent.VK_UP://↑当前键值
-                bU = false;
-                break;
-            case KeyEvent.VK_DOWN:
-                bD = false;
-                break;
-            case KeyEvent.VK_LEFT:
-                bL = false;
-                break;
-            case KeyEvent.VK_RIGHT:
-                bR = false;
-                break;
-            case KeyEvent.VK_SPACE:
-                fire();
-        }
-        setMainDir();
-    }
-
-
-    private void setMainDir() {
-        if(!bU && !bD && !bL && !bR ){
-            moving = false;
-        }else{
-            moving = true;
-        }
-        if(bU && !bD && !bL && !bR ){
-            dir = Dir.U;
-        }
-        if(!bU && bD && !bL && !bR ){
-            dir = Dir.D;
-        }
-        if(!bU && !bD && bL && !bR ){
-            dir = Dir.L;
-        }
-        if(!bU && !bD && !bL && bR ){
-            dir = Dir.R;
-        }
-
-    }
-
     private void move() {
-        if (!moving) return;
+        if (moving) return;
+        oldX = x;
+        oldY = y;
         switch (dir){
             case U:
                 y -= SPEED;
@@ -145,9 +90,46 @@ public class Tank {
                 break;
 
         }
+        //坦克边界检测
+        tankBoundsCheck();
+        //随机方向
+        randomDir();
+        //随机开火
+        if (random.nextInt(100) >98){
+            this.fire();
+        }
+
     }
-    private void fire() {
-       tf.add(new Bullet(x,y,dir,group));
+
+    private void fire() {//开火
+        int bX = x + tankWidth/2 - ResourceMgr.bulletU.getWidth()/2;
+        int bY = y + tankHeight/2 - ResourceMgr.bulletU.getHeight()/2;
+       TankFrame.INSTANCE.add(new Bullet(bX,bY,dir,group));
+    }
+
+    private void tankBoundsCheck() {//坦克边缘检查
+        if (x < 1 || y < tankHeight -20 || x > TankFrame.INSTANCE.GAME_WIDTH - tankWidth-1 || y > TankFrame.INSTANCE.GAME_HEIGHT - tankHeight-1) {
+            this.back();
+        }
+
+    }
+
+    private void back() {
+        this.x = oldX;
+        this.y = oldY;
+    }
+
+    public void die() {
+        this.setLive(false);
+        int eX = x + tankWidth/2 - ResourceMgr.explodes[0].getWidth()/2;
+        int eY = y + tankHeight/2 - ResourceMgr.explodes[0].getHeight()/2;
+        TankFrame.INSTANCE.add(new Explode(eX, eY));
+    }
+
+    //随机方向
+    private void randomDir(){
+        if (random.nextInt(100) >95)
+            this.dir = Dir.randomDir();
     }
 
 }

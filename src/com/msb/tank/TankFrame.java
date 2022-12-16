@@ -2,6 +2,9 @@ package com.msb.tank;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * @author: msb
@@ -14,17 +17,24 @@ import java.awt.event.*;
 
 * */
 public class TankFrame extends Frame {
+    public static final TankFrame INSTANCE = new TankFrame();
     //我方坦克1
-    private Tank myTank;
+    private Player myTank;
     //敌方坦克1
-    private Tank enemy;
-    private  Bullet bullet;
+    private List<Tank> enemyTanks;
+    private List<Bullet> bullets;
+    private List<Explode> explodes;
+
+    public List<Bullet> getBullets() {
+        return bullets;
+    }
+
     public static final int GAME_WIDTH = 1300, GAME_HEIGHT = 800;
 
-    public TankFrame(){
+    private TankFrame() {
         this.setTitle("Tank War");
-        this.setSize(GAME_WIDTH,GAME_HEIGHT);
-        this.setLocation(300,100);
+        this.setSize(GAME_WIDTH, GAME_HEIGHT);
+        this.setLocation(300, 100);
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -33,28 +43,70 @@ public class TankFrame extends Frame {
         });
         //添加键盘监听
         this.addKeyListener(new TankKeyListener());
-        myTank = new Tank(300,730, Dir.U, Group.GOOD,this);
-        enemy = new Tank(300,50,Dir.D, Group.BAD,this);
-        bullet = new Bullet(300,50,Dir.D, Group.BAD);
+        initGameObject();
+    }
+
+    private void initGameObject() {
+        myTank = new Player(300, 730, Dir.U, Group.GOOD);
+        enemyTanks = new ArrayList<>();
+        bullets = new ArrayList<>();
+        explodes = new ArrayList<>();
+
+        int enemyTanksCount = Integer.parseInt(PropertyMgr.get("initTankCount"));
+        for (int i = 0; i < enemyTanksCount; i++) {
+            enemyTanks.add(new Tank(100 + i * 100, 50, Dir.D, Group.BAD));
+        }
     }
 
     @Override
     public void paint(Graphics g) {//画笔让自己去处理，不在TankFrame的paint去画坦克 ，让Tank自己去画
+        Color c = g.getColor();
+        g.setColor(Color.white);
+        g.drawString("子弹的数量：" + bullets.size(), 10, 50);
+        g.drawString("坦克的数量：" + enemyTanks.size(), 10, 70);
+        g.setColor(c);
+
+
+        for (int i = 0; i < bullets.size(); i++) {
+            for (int j = 0; j < enemyTanks.size(); j++) {
+                bullets.get(i).collidesWithTank(enemyTanks.get(j));
+            }
+            if (!bullets.get(i).isLiving()) {
+                bullets.remove(i);
+            } else {
+                bullets.get(i).paint(g);
+            }
+        }
+
         myTank.paint(g);
-        enemy.paint(g);
-        bullet.paint(g);
+        for (int i = 0; i < enemyTanks.size(); i++) {
+            if (!enemyTanks.get(i).isLive()) {
+                enemyTanks.remove(i);
+            } else {
+                enemyTanks.get(i).paint(g);
+            }
+        }
+        for (int i = 0; i < explodes.size(); i++) {
+            if (!explodes.get(i).isLive()) {
+                explodes.remove(i);
+            } else {
+                explodes.get(i).paint(g);
+            }
+        }
     }
+
     //解决屏幕闪烁问题  双缓冲
     Image offScreenImage = null;
+
     @Override
     public void update(Graphics g) {
         if (offScreenImage == null) {
-            offScreenImage = this.createImage(GAME_WIDTH,GAME_HEIGHT);
+            offScreenImage = this.createImage(GAME_WIDTH, GAME_HEIGHT);
         }
         Graphics gOffScreen = offScreenImage.getGraphics();
         Color c = gOffScreen.getColor();
         gOffScreen.setColor(Color.black);
-        gOffScreen.fillRect(0,0,GAME_WIDTH,GAME_HEIGHT);
+        gOffScreen.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
         gOffScreen.setColor(c);
         paint(gOffScreen);//内存的画笔画完以后
         g.drawImage(offScreenImage, 0, 0, null);//显存的画笔直接把内存中画好的直接显示出来
@@ -73,7 +125,11 @@ public class TankFrame extends Frame {
         }
     }
 
-    public void add(Bullet bullet){
-        this.bullet = bullet;
+    public void add(Bullet bullet) {
+        this.bullets.add(bullet);
+    }
+
+    public void add(Explode explode) {
+        this.explodes.add(explode);
     }
 }

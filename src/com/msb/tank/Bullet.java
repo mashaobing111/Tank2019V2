@@ -12,7 +12,8 @@ public class Bullet {
     private  int x, y;
     private Dir dir;
     private Group group;
-    public static final int SPEED = 3;
+    private boolean living = true;
+    public static final int SPEED = 10;
 
     public Bullet(int x, int y, Dir dir, Group group) {
         this.x = x;
@@ -21,6 +22,7 @@ public class Bullet {
         this.group = group;
     }
     public void paint(Graphics g) {
+        /*if (!living) TankFrame.INSTANCE.getBullets().remove(this);*/
         switch (dir) {
             case U:
                 g.drawImage(ResourceMgr.bulletU, x, y, null);
@@ -53,5 +55,35 @@ public class Bullet {
                 x += SPEED;
                 break;
         }
+        //子弹边界检测
+        bulletBoundsCheck();
+    }
+    private void bulletBoundsCheck() {
+        if (x > TankFrame.INSTANCE.GAME_WIDTH || x < 0 || y > TankFrame.INSTANCE.GAME_HEIGHT || y < 0) living = false;//子弹边界检测
+    }
+
+    public boolean isLiving() {
+        return living;
+    }
+
+    public void setLiving(boolean living) {
+        this.living = living;
+    }
+
+    public void collidesWithTank(Tank tank){
+        if (!this.isLiving() || !tank.isLive()) return;
+        Rectangle rectBullet = new Rectangle(x, y, ResourceMgr.bulletU.getWidth(), ResourceMgr.bulletU.getHeight());
+        Rectangle rectTank = new Rectangle(tank.getX(), tank.getY(), ResourceMgr.goodTankU.getWidth(), ResourceMgr.goodTankU.getHeight());
+
+        if (this.group != tank.getGroup()) {
+            if (rectBullet.intersects(rectTank)) {
+                this.die();
+                tank.die();
+            }
+        }
+
+    }
+    public void die(){
+        this.setLiving(false);
     }
 }
