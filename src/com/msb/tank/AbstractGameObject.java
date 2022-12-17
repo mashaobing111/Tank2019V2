@@ -9,5 +9,8 @@ import java.awt.*;
  * @version: 1.0
  */
 public abstract class AbstractGameObject {
+
     public abstract void paint(Graphics g);
+
+    public abstract boolean isLive();
 }

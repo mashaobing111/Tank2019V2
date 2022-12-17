@@ -18,7 +18,11 @@ public class Tank extends AbstractGameObject{
     public static final int SPEED = 5;
     private  boolean live  = true;
     private  int oldX, oldY;
+    private Rectangle rect;
+    private int w = ResourceMgr.goodTankU.getWidth();
+    private int h = ResourceMgr.goodTankU.getHeight();
     private Random random = new Random();
+
     public Tank(int x, int y, Direction direction, Group group) {
         this.x = x;
         this.y = y;
@@ -26,6 +30,7 @@ public class Tank extends AbstractGameObject{
         this.group = group;
         this.oldX = x;
         this.oldY = y;
+        rect = new Rectangle(x, y, w, h);
     }
 
     public int getX() {
@@ -64,11 +69,20 @@ public class Tank extends AbstractGameObject{
                 g.drawImage(ResourceMgr.badTankL, x, y, null);
                 break;
         }
+
+        /*Color old = g.getColor();
+        g.setColor(Color.yellow);
+        g.drawRect(rect.x, rect.y, rect.width, rect.height);
+        g.setColor(old);*/
+
         move();
+
+        rect.x = x;
+        rect.y = y;
     }
 
     private void move() {
-        if (moving) return;
+        if (!moving) return;
         oldX = x;
         oldY = y;
         switch (direction){
@@ -110,7 +124,7 @@ public class Tank extends AbstractGameObject{
 
     }
 
-    private void back() {
+    public void back() {
         this.x = oldX;
         this.y = oldY;
     }
@@ -127,5 +141,7 @@ public class Tank extends AbstractGameObject{
         if (random.nextInt(100) >95)
             this.direction = Direction.randomDir();
     }
-
+    public Rectangle getRect(){
+        return rect;
+    }
 }

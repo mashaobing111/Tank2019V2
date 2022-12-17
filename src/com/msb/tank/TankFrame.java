@@ -1,8 +1,12 @@
 package com.msb.tank;
 
+import com.msb.tank.chainofresponsibility.Collider;
+import com.msb.tank.chainofresponsibility.ColliderChain;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -27,6 +31,8 @@ public class TankFrame extends Frame {
     Image offScreenImage = null;
     //我方坦克1
     private Player myTank;
+    ColliderChain cc = new ColliderChain();
+
 
     private TankFrame() {
         this.setTitle("Tank War");
@@ -41,6 +47,7 @@ public class TankFrame extends Frame {
         //添加键盘监听
         this.addKeyListener(new TankKeyListener());
         initGameObject();
+
     }
 
     private void initGameObject() {
@@ -55,19 +62,29 @@ public class TankFrame extends Frame {
             this.add(new Tank(100 + i * 100, 50, Direction.D, Group.BAD));
         }
         this.add(new Wall(300,200,400,50));
-
     }
 
     @Override
     public void paint(Graphics g) {//画笔让自己去处理，不在TankFrame的paint去画坦克 ，让Tank自己去画
         Color c = g.getColor();
         g.setColor(Color.white);
-        /*g.drawString("子弹的数量：" + bullets.size(), 10, 50);
-        g.drawString("坦克的数量：" + enemyTanks.size(), 10, 70);*/
+        g.drawString("gameObjects：" + gameObjects.size(), 10, 50);
+//        g.drawString("坦克的数量：" + enemyTanks.size(), 10, 70);
         g.setColor(c);
 
         for (int i = 0; i <gameObjects.size() ; i++) {
-            gameObjects.get(i).paint(g);
+            if (!gameObjects.get(i).isLive()) {
+                gameObjects.remove(i);
+                break;
+            }
+            AbstractGameObject go1 = gameObjects.get(i);
+            for (int j = i+1; j <gameObjects.size() ; j++) {
+                AbstractGameObject go2 = gameObjects.get(j);
+                cc.collide(go1, go2);
+            }
+            if (gameObjects.get(i).isLive()) {
+                gameObjects.get(i).paint(g);
+            }
         }
         myTank.paint(g);
         /*for (int i = 0; i < bullets.size(); i++) {

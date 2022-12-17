@@ -1,7 +1,8 @@
 # Key - value pair
-initTankCount=5
+initTankCount=10
 gameWidth=1300
 gameHeight=800
 
 #tank fire strategy
 tankFireStrategy=DefaultFireStrategy
+colliders=BulletTankCollider,BulletWallCollider,TankWallCollider,TankTankCollider
