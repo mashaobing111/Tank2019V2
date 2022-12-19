@@ -1,6 +1,7 @@
 package com.msb.tank;
 
 import java.awt.*;
+import java.io.Serializable;
 
 /**
  * @author: msb
@@ -8,7 +9,7 @@ import java.awt.*;
  * @description: com.msb.tank
  * @version: 1.0
  */
-public class Explode extends AbstractGameObject{
+public class Explode extends AbstractGameObject {
     private int x, y;
     private int width, height;
     private int step = 0;

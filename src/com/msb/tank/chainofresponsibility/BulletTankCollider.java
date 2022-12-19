@@ -13,7 +13,7 @@ import java.awt.*;
  * @description: com.msb.tank.chainofresponsibility
  * @version: 1.0
  */
-public class BulletTankCollider implements Collider {
+public class  BulletTankCollider implements Collider {
     @Override
     public boolean collide(AbstractGameObject ago1, AbstractGameObject ago2) {
         if (ago1 instanceof Bullet && ago2 instanceof Tank){

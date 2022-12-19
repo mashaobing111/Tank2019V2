@@ -6,6 +6,7 @@ import com.msb.tank.strategy.FourDirFireStrategy;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.io.Serializable;
 import java.util.Random;
 
 /**
@@ -14,7 +15,7 @@ import java.util.Random;
  * @description: com.msb.tank
  * @version: 1.0
  */
-public class Player extends AbstractGameObject{
+public class Player extends AbstractGameObject {
     public static final int SPEED = 5;
     private int x , y ;
     private Direction direction;

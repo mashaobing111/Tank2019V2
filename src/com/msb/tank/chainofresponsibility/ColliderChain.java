@@ -3,6 +3,8 @@ package com.msb.tank.chainofresponsibility;
 import com.msb.tank.AbstractGameObject;
 import com.msb.tank.PropertyMgr;
 
+import java.beans.Transient;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +14,7 @@ import java.util.List;
  * @description: com.msb.tank.chainofresponsibility
  * @version: 1.0
  */
-public class ColliderChain implements Collider{
+public class ColliderChain implements Collider {
     List<Collider> colliders;
 
     public ColliderChain() {
@@ -39,4 +41,5 @@ public class ColliderChain implements Collider{
         }
         return true;
     }
+
 }

@@ -76,3 +76,18 @@
 1、什么时候用抽象类或接口
     a.概念上存在的用抽象类 。需要有属性的用抽象类
     b.某一方面的能力或描述需要用接口
+
+四、
+    1.Model和View分离（MVC）
+        a.张三 88 李四 77 王五 66
+        b.图表 拼图 线框
+    2.坦克Model View
+        a.GameModel
+        b.Facade
+            1.门面
+        c.Mediator
+            1.调停者
+    3.存盘功能 （序列化）
+        a.Serializable接口
+    4.线程
+        a.复习与补充

@@ -3,6 +3,7 @@ package com.msb.tank;
 import com.msb.tank.chainofresponsibility.ColliderChain;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  * @description: com.msb.tank
  * @version: 1.0
  */
-public class GameModel {
+public class GameModel implements Serializable {
     //添加游戏物体容器
     List<AbstractGameObject> gameObjects;
     //我方坦克1
@@ -44,12 +45,15 @@ public class GameModel {
         g.drawString("gameObjects：" + gameObjects.size(), 10, 50);
 //        g.drawString("坦克的数量：" + enemyTanks.size(), 10, 70);
         g.setColor(c);
-
         for (int i = 0; i <gameObjects.size() ; i++) {
             if (!gameObjects.get(i).isLive()) {
                 gameObjects.remove(i);
                 break;
             }
+        }
+
+        for (int i = 0; i <gameObjects.size() ; i++) {
+
             AbstractGameObject go1 = gameObjects.get(i);
             for (int j = i+1; j <gameObjects.size() ; j++) {
                 AbstractGameObject go2 = gameObjects.get(j);
@@ -58,7 +62,10 @@ public class GameModel {
             if (gameObjects.get(i).isLive()) {
                 gameObjects.get(i).paint(g);
             }
+
+
         }
+
         myTank.paint(g);
     }
 

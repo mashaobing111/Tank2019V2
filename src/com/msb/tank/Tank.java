@@ -1,6 +1,7 @@
 package com.msb.tank;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.Random;
 
 /**
@@ -9,7 +10,7 @@ import java.util.Random;
  * @description: com.msb.tank
  * @version: 1.0
  */
-public class Tank extends AbstractGameObject{
+public class Tank extends AbstractGameObject {
     private int x , y ;
     private Direction direction = Direction.U;
     private boolean bU, bD, bL, bR;
@@ -112,13 +113,13 @@ public class Tank extends AbstractGameObject{
     }
 
     private void fire() {//开火
-        int bX = x + ResourceMgr.goodTankU.getWidth()/2 - ResourceMgr.bulletU.getWidth()/2;
-        int bY = y + ResourceMgr.goodTankU.getHeight()/2 - ResourceMgr.bulletU.getHeight()/2;
+        int bX = x + this.w/2 - Bullet.W/2;
+        int bY = y + this.h/2 - Bullet.H/2;
         TankFrame.INSTANCE.getGm().add(new Bullet(bX,bY, direction,group));
     }
 
     private void tankBoundsCheck() {//坦克边缘检查
-        if (x < 1 || y < ResourceMgr.goodTankU.getHeight() -20 || x > TankFrame.INSTANCE.GAME_WIDTH - ResourceMgr.goodTankU.getWidth()-1 || y > TankFrame.INSTANCE.GAME_HEIGHT - ResourceMgr.goodTankU.getHeight()-1) {
+        if (x < 1 || y < this.h -20 || x > TankFrame.INSTANCE.GAME_WIDTH - this.w - 1 || y > TankFrame.INSTANCE.GAME_HEIGHT - this.h-1) {
             this.back();
         }
 

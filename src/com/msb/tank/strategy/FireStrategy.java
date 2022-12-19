@@ -2,6 +2,8 @@ package com.msb.tank.strategy;
 
 import com.msb.tank.Player;
 
+import java.io.Serializable;
+
 
 /**
  * @author: msb
@@ -9,6 +11,6 @@ import com.msb.tank.Player;
  * @description: com.msb.tank.strategy
  * @version: 1.0
  */
-public interface FireStrategy {
+public interface FireStrategy extends Serializable {
     public void fire(Player t);
 }

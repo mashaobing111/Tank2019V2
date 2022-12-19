@@ -1,6 +1,7 @@
 package com.msb.tank;
 
 import java.awt.*;
+import java.io.Serializable;
 
 /**
  * @author: msb
@@ -8,7 +9,7 @@ import java.awt.*;
  * @description: com.msb.tank
  * @version: 1.0
  */
-public abstract class AbstractGameObject {
+public abstract class AbstractGameObject implements Serializable {
 
     public abstract void paint(Graphics g);
 

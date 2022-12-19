@@ -3,6 +3,7 @@ package com.msb.tank;
 import com.msb.tank.AbstractGameObject;
 
 import java.awt.*;
+import java.io.Serializable;
 
 /**
  * @author: msb

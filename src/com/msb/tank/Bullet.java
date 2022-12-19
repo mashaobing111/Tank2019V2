@@ -1,6 +1,7 @@
 package com.msb.tank;
 
 import java.awt.*;
+import java.io.Serializable;
 
 /**
  * @author: msb
@@ -8,22 +9,22 @@ import java.awt.*;
  * @description: com.msb.tank
  * @version: 1.0
  */
-public class Bullet extends AbstractGameObject{
+public class Bullet extends AbstractGameObject {
     public static final int SPEED = 10;
     private  int x, y;
     private Direction direction;
     private Group group;
     private boolean live = true;
     private Rectangle rect;
-    private int w = ResourceMgr.bulletU.getWidth();
-    private int h = ResourceMgr.bulletU.getHeight();
+    public static final int W = ResourceMgr.bulletU.getWidth();
+    public static final int H = ResourceMgr.bulletU.getHeight();
 
     public Bullet(int x, int y, Direction direction, Group group) {
         this.x = x;
         this.y = y;
         this.direction = direction;
         this.group = group;
-        rect = new Rectangle(x, y, w, h);
+        rect = new Rectangle(x, y, W, H);
     }
 
     public int getX() {
@@ -109,7 +110,7 @@ public class Bullet extends AbstractGameObject{
     private void bulletBoundsCheck() {
         if (x > TankFrame.INSTANCE.GAME_WIDTH || x < 0 || y > TankFrame.INSTANCE.GAME_HEIGHT || y < 0) live = false;//子弹边界检测
     }
-    
+
     public Rectangle getRect(){
         return rect;
     }
@@ -127,8 +128,8 @@ public class Bullet extends AbstractGameObject{
                 ", group=" + group +
                 ", living=" + live +
                 ", rect=" + rect +
-                ", w=" + w +
-                ", h=" + h +
+                ", w=" + W +
+                ", h=" + H +
                 '}';
     }
 }
