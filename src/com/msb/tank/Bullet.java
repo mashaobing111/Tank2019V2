@@ -109,10 +109,7 @@ public class Bullet extends AbstractGameObject{
     private void bulletBoundsCheck() {
         if (x > TankFrame.INSTANCE.GAME_WIDTH || x < 0 || y > TankFrame.INSTANCE.GAME_HEIGHT || y < 0) live = false;//子弹边界检测
     }
-
-    public void collidesWithTank(Tank tank){
-
-    }
+    
     public Rectangle getRect(){
         return rect;
     }

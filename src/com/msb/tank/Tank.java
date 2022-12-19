@@ -114,7 +114,7 @@ public class Tank extends AbstractGameObject{
     private void fire() {//开火
         int bX = x + ResourceMgr.goodTankU.getWidth()/2 - ResourceMgr.bulletU.getWidth()/2;
         int bY = y + ResourceMgr.goodTankU.getHeight()/2 - ResourceMgr.bulletU.getHeight()/2;
-        TankFrame.INSTANCE.add(new Bullet(bX,bY, direction,group));
+        TankFrame.INSTANCE.getGm().add(new Bullet(bX,bY, direction,group));
     }
 
     private void tankBoundsCheck() {//坦克边缘检查
@@ -133,7 +133,7 @@ public class Tank extends AbstractGameObject{
         this.setLive(false);
         int eX = x + ResourceMgr.goodTankU.getWidth()/2 - ResourceMgr.explodes[0].getWidth()/2;
         int eY = y + ResourceMgr.goodTankU.getHeight()/2 - ResourceMgr.explodes[0].getHeight()/2;
-        TankFrame.INSTANCE.add(new Explode(eX, eY));
+        TankFrame.INSTANCE.getGm().add(new Explode(eX, eY));
     }
 
     //随机方向

@@ -13,7 +13,7 @@ import com.msb.tank.Wall;
 public class TankTankCollider implements Collider {
     @Override
     public boolean collide(AbstractGameObject ago1, AbstractGameObject ago2) {
-        if (ago1 instanceof Tank && ago2 instanceof Tank) {
+        if (ago1 != ago2 && ago1 instanceof Tank && ago2 instanceof Tank) {
             Tank t1 = (Tank) ago1;
             Tank t2 = (Tank) ago2;
             if (!t1.isLive() || !t2.isLive()) return false;
