@@ -1,5 +1,7 @@
 package com.msb.tank;
 
+import com.msb.tank.net.Client;
+
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -15,13 +17,17 @@ public class Main {
     public static void main(String[] args) {
         TankFrame tf = TankFrame.INSTANCE;
         tf.setVisible(true);
-        while (true){
-            try {
-                TimeUnit.MILLISECONDS.sleep(25);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        new Thread(()-> {
+            while (true){
+                try {
+                    TimeUnit.MILLISECONDS.sleep(25);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                tf.repaint();  //repaint方法 调用update方法 调用paint方法
             }
-            tf.repaint();  //repaint方法 调用update方法 调用paint方法
-        }
+        }).start();
+
+        Client.INSTANCE.connect();
     }
 }

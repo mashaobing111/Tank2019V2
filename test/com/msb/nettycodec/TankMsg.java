@@ -1,0 +1,24 @@
+package com.msb.nettycodec;
+
+/**
+ * @author: msb
+ * @date: 2022/12/23 - 12 - 23 - 15:24
+ * @description: com.msb.nettycodec
+ * @version: 1.0
+ */
+public class TankMsg {
+    public int x, y;
+
+    public TankMsg(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    @Override
+    public String toString() {
+        return "TankMsg{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
+    }
+}

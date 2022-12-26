@@ -46,5 +46,6 @@ public class SerializeTest {
 }
 class T implements Serializable {
     int a = 8;
-    int b = 9;
+    //透明属性（透明后无法序列化）
+    transient int b = 9;
 }

@@ -91,3 +91,20 @@
         a.Serializable接口
     4.线程
         a.复习与补充
+
+五、
+    1.网络模型
+        a.编程模型：TCP UDP
+            1.TCP-> 可靠连接 使命必达 速度慢
+            2.UDP-> 不可靠 速度快
+    2.TCP的编程模型
+        a.BIO OIO
+            1.Blocking IO     Old IO
+        b.NIO
+            1.New IO     Non-Blocking IO
+            11.Selector
+            111.ByteBuffer （single pointer）
+        c.AIO
+            1.Asynchronous IO
+    3.Netty
+        a.封装了NIO ByteBuffer（read pointer， write pointer）

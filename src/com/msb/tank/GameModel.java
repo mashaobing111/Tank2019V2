@@ -4,7 +4,7 @@ import com.msb.tank.chainofresponsibility.ColliderChain;
 
 import java.awt.*;
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -20,13 +20,13 @@ public class GameModel implements Serializable {
     private Player myTank;
     //碰撞责任链
     ColliderChain cc = new ColliderChain();
-
+    Random r = new Random();
     public GameModel(){
         initGameObject();
     }
 
     private void initGameObject() {
-        myTank = new Player(300, 730, Direction.U, Group.GOOD);
+        myTank = new Player(50 + r.nextInt(1000), 50 + r.nextInt(600), Direction.U, Group.values()[r.nextInt(Group.values().length)]);
         gameObjects = new ArrayList<>();
         /*enemyTanks = new ArrayList<>();
         bullets = new ArrayList<>();
@@ -34,9 +34,9 @@ public class GameModel implements Serializable {
 
         int enemyTanksCount = Integer.parseInt(PropertyMgr.get("initTankCount"));
         for (int i = 0; i < enemyTanksCount; i++) {
-            this.add(new Tank(100 + i * 100, 50, Direction.D, Group.BAD));
+            this.add(new Tank(100 + i * 100, 50, Direction.D, Group.values()[r.nextInt(Group.values().length)]));
         }
-        this.add(new Wall(300,200,400,50));
+        //this.add(new Wall(300,200,400,50));
     }
 
     public void paint(Graphics g){
@@ -76,5 +76,15 @@ public class GameModel implements Serializable {
 
     public Player getMyTank(){
         return myTank;
+    }
+
+    public Tank findTankByUUID(UUID id) {
+        for (AbstractGameObject o : gameObjects){
+            if (o instanceof Tank){
+                Tank t = (Tank)o;
+                if (id.equals(t.getId())) return t;
+            }
+        }
+        return null;
     }
 }

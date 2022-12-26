@@ -1,5 +1,5 @@
 # Key - value pair
-initTankCount=10
+initTankCount=0
 gameWidth=1300
 gameHeight=800
 
