@@ -1,7 +1,10 @@
 package com.msb.tank;
 
+import com.msb.tank.net.BulletNewMsg;
+import com.msb.tank.net.Client;
+
 import java.awt.*;
-import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * @author: msb
@@ -11,20 +14,42 @@ import java.io.Serializable;
  */
 public class Bullet extends AbstractGameObject {
     public static final int SPEED = 10;
+    public static final int W = ResourceMgr.bulletU.getWidth();
+    public static final int H = ResourceMgr.bulletU.getHeight();
     private  int x, y;
-    private Direction direction;
+    private Dir dir;
     private Group group;
     private boolean live = true;
     private Rectangle rect;
-    public static final int W = ResourceMgr.bulletU.getWidth();
-    public static final int H = ResourceMgr.bulletU.getHeight();
-
-    public Bullet(int x, int y, Direction direction, Group group) {
+    private UUID id = UUID.randomUUID();
+    private UUID playId;
+    public Bullet(UUID playId, int x, int y, Dir dir, Group group) {
+        this.playId = playId;
         this.x = x;
         this.y = y;
-        this.direction = direction;
+        this.dir = dir;
         this.group = group;
         rect = new Rectangle(x, y, W, H);
+
+    }
+
+    public UUID getId(){
+        return this.id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public UUID getPlayerId(){
+        return this.playId;
+    }
+    public Dir getDir() {
+        return dir;
+    }
+
+    public void setDir(Dir dir) {
+        this.dir = dir;
     }
 
     public int getX() {
@@ -61,7 +86,7 @@ public class Bullet extends AbstractGameObject {
 
     public void paint(Graphics g) {
 
-        switch (direction) {
+        switch (dir) {
             case U:
                 g.drawImage(ResourceMgr.bulletU, x, y, null);
                 break;
@@ -90,7 +115,7 @@ public class Bullet extends AbstractGameObject {
     }
 
     private void move() {
-        switch (direction){
+        switch (dir){
             case U:
                 y -= SPEED;
                 break;
@@ -124,7 +149,7 @@ public class Bullet extends AbstractGameObject {
         return "Bullet{" +
                 "x=" + x +
                 ", y=" + y +
-                ", direction=" + direction +
+                ", direction=" + dir +
                 ", group=" + group +
                 ", living=" + live +
                 ", rect=" + rect +

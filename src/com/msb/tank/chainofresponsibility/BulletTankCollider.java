@@ -4,6 +4,8 @@ import com.msb.tank.AbstractGameObject;
 import com.msb.tank.Bullet;
 import com.msb.tank.ResourceMgr;
 import com.msb.tank.Tank;
+import com.msb.tank.net.Client;
+import com.msb.tank.net.TankDieMsg;
 
 import java.awt.*;
 
@@ -26,6 +28,7 @@ public class  BulletTankCollider implements Collider {
             if (b.getRect().intersects(t.getRect())) {
                 b.die();
                 t.die();
+                Client.INSTANCE.send(new TankDieMsg(t.getId(),b.getId()));
                 return false;
             }
         }else if (ago1 instanceof Tank && ago2 instanceof Bullet){

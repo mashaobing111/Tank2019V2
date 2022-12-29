@@ -2,6 +2,8 @@ package com.msb.tank.strategy;
 
 
 import com.msb.tank.*;
+import com.msb.tank.net.BulletNewMsg;
+import com.msb.tank.net.Client;
 
 /**
  * @author: msb
@@ -15,6 +17,9 @@ public class DefaultFireStrategy implements FireStrategy {
     public void fire(Player p) {
         int bX = p.getX() + ResourceMgr.goodTankU.getWidth()/2 - ResourceMgr.bulletU.getWidth()/2;
         int bY = p.getY() + ResourceMgr.goodTankU.getHeight()/2 - ResourceMgr.bulletU.getHeight()/2;
-        TankFrame.INSTANCE.getGm().add(new Bullet(bX,bY,p.getDirection(),p.getGroup()));
+        Bullet b = new Bullet(p.getId(), bX,bY,p.getDir(),p.getGroup());
+        TankFrame.INSTANCE.getGm().add(b);
+        //send a bullet new msg to server when a bullet is born;
+        Client.INSTANCE.send(new BulletNewMsg(b));
     }
 }

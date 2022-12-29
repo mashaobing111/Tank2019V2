@@ -45,13 +45,13 @@ public class Client {
             workerGroup.shutdownGracefully();
         }
     }
-    public void send(TankJoinMsg msg){
+    public void send(Msg msg){
         channel.writeAndFlush(msg);
     }
     public void closeConnection(){
         channel.close();
     }
-    class ClientHandler extends SimpleChannelInboundHandler<TankJoinMsg>{
+    class ClientHandler extends SimpleChannelInboundHandler<Msg>{
         @Override
         public void channelActive(ChannelHandlerContext ctx) throws Exception {
             ctx.writeAndFlush(new TankJoinMsg(TankFrame.INSTANCE.getGm().getMyTank()));
@@ -66,9 +66,9 @@ public class Client {
         }
 
         @Override
-        protected void channelRead0(ChannelHandlerContext channelHandlerContext, TankJoinMsg tankJoinMsg) throws Exception {
-            System.out.println(tankJoinMsg);
-            tankJoinMsg.handle();
+        protected void channelRead0(ChannelHandlerContext channelHandlerContext, Msg msg) throws Exception {
+            System.out.println(msg.toString());
+            msg.handle();
         }
     }
 }

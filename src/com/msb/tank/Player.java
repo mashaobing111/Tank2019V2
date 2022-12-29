@@ -1,13 +1,13 @@
 package com.msb.tank;
 
-import com.msb.tank.strategy.DefaultFireStrategy;
+import com.msb.tank.net.BulletNewMsg;
+import com.msb.tank.net.Client;
+import com.msb.tank.net.TankMoveOrDirChangeMsg;
+import com.msb.tank.net.TankStopMsg;
 import com.msb.tank.strategy.FireStrategy;
-import com.msb.tank.strategy.FourDirFireStrategy;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.io.Serializable;
-import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -19,22 +19,28 @@ import java.util.UUID;
 public class Player extends AbstractGameObject {
     public static final int SPEED = 5;
     private int x , y ;
-    private Direction direction;
+    private Dir dir;
     private boolean bU, bD, bL, bR;
     private  boolean moving = false;
     private Group group;
     private int tankWidth = ResourceMgr.goodTankU.getWidth(), tankHeight =  ResourceMgr.goodTankU.getHeight();
     private  boolean live  = true;
     private UUID id = UUID.randomUUID();
+    private Rectangle rect;
     private FireStrategy fireStrategy;
 
-    public Player(int x, int y, Direction direction, Group group) {
+    public Rectangle getRect() {
+        return rect;
+    }
+
+    public Player(int x, int y, Dir dir, Group group) {
         this.x = x;
         this.y = y;
-        this.direction = direction;
+        this.dir = dir;
         this.group = group;
         //init fire strategy from config file
         this.initFireStrategy();
+        rect = new Rectangle(x,y,tankWidth,tankHeight);
     }
 
     public UUID getId() {
@@ -53,12 +59,12 @@ public class Player extends AbstractGameObject {
         this.moving = moving;
     }
 
-    public Direction getDirection() {
-        return direction;
+    public Dir getDir() {
+        return dir;
     }
 
-    public void setDirection(Direction direction) {
-        this.direction = direction;
+    public void setDir(Dir dir) {
+        this.dir = dir;
     }
 
     public int getX() {
@@ -87,7 +93,7 @@ public class Player extends AbstractGameObject {
         g.setColor(Color.yellow);
         g.drawString(id.toString(),x,y - 10);
         g.setColor(c);
-        switch (direction) {
+        switch (dir) {
             case U:
                 g.drawImage(this.group.equals(Group.GOOD) ?  ResourceMgr.goodTankU : ResourceMgr.badTankU, x, y, null);
                 break;
@@ -102,6 +108,8 @@ public class Player extends AbstractGameObject {
                 break;
         }
         move();
+        rect.x = x;
+        rect.y = y;
     }
 
     public void keyPressed(KeyEvent e) {
@@ -149,7 +157,7 @@ public class Player extends AbstractGameObject {
     private void move() {
         if (!moving) return;
 
-        switch (direction){
+        switch (dir){
             case U:
                 y -= SPEED;
                 break;
@@ -170,25 +178,30 @@ public class Player extends AbstractGameObject {
     }
 
     private void setMainDir() {
+        boolean oldMoving = moving;
+        Dir oldDir = dir;
         if(!bU && !bD && !bL && !bR ){
             moving = false;
-
+            Client.INSTANCE.send(new TankStopMsg(this.id,this.x,this.y));
         }else{
             moving = true;
-        }
+
         if(bU){
-            direction = Direction.U;
+            dir = Dir.U;
         }
         if(bD){
-            direction = Direction.D;
+            dir = Dir.D;
         }
         if(bL ){
-            direction = Direction.L;
+            dir = Dir.L;
         }
         if(bR ){
-            direction = Direction.R;
+            dir = Dir.R;
         }
-
+        //old status is not moving , now my tank will move immediate
+        if (!oldMoving) Client.INSTANCE.send(new TankMoveOrDirChangeMsg(this.id,this.x,this.y,this.dir));
+        if (!this.dir.equals(oldDir)) Client.INSTANCE.send(new TankMoveOrDirChangeMsg(this.id,this.x,this.y,this.dir));
+        }
     }
 
     private void initFireStrategy(){
@@ -208,6 +221,7 @@ public class Player extends AbstractGameObject {
         //多态 父类引用指向子类对象
 
         fireStrategy.fire(this);
+
     }
 
     private void tankBoundsCheck() {//坦克边缘检查
@@ -215,5 +229,11 @@ public class Player extends AbstractGameObject {
         if (x < 1) x = 1;
         if (y > TankFrame.INSTANCE.GAME_HEIGHT - tankHeight-1) y = TankFrame.INSTANCE.GAME_HEIGHT - tankHeight-1;
         if (y < tankHeight -20) y = tankHeight-20;
+    }
+    public void die() {
+        this.setLive(false);
+        int eX = x + ResourceMgr.goodTankU.getWidth()/2 - ResourceMgr.explodes[0].getWidth()/2;
+        int eY = y + ResourceMgr.goodTankU.getHeight()/2 - ResourceMgr.explodes[0].getHeight()/2;
+        TankFrame.INSTANCE.getGm().add(new Explode(eX, eY));
     }
 }

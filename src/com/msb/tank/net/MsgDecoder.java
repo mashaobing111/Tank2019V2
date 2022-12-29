@@ -15,17 +15,39 @@ import java.util.List;
 public class MsgDecoder extends ByteToMessageDecoder {
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
-        if (byteBuf.readableBytes() < 37) return;
+        //先确定消息头是否读全
+        if (byteBuf.readableBytes() < 8) return;
 
-        int length = byteBuf.readInt();
+        byteBuf.markReaderIndex();//标记读指针
 
+        MsgType msgType = MsgType.values()[byteBuf.readInt()];//消息类型
+        int length = byteBuf.readInt();//消息长度
+
+        if (byteBuf.readableBytes() < length){ //数据是否读全
+            byteBuf.resetReaderIndex();//复位读指针
+            return;
+        }
         byte[] bytes = new byte[length];
 
         byteBuf.readBytes(bytes);
 
-        TankJoinMsg tjm = new TankJoinMsg();
-        tjm.parse(bytes);
+        Msg msg = null;
 
-        list.add(tjm);
+        msg = (Msg)Class.forName("com.msb.tank.net." + msgType.toString() + "Msg")
+                .getDeclaredConstructor()
+                .newInstance();
+        //方法二
+        /*switch (msgType){
+            case TankJoin:
+                msg = new TankJoinMsg();
+                msg.parse(bytes);
+                break;
+            case TankStartMoving:
+                msg = new TankStartMovingMsg();
+                msg.parse();
+                break;
+        }*/
+        msg.parse(bytes);
+        list.add(msg);
     }
 }

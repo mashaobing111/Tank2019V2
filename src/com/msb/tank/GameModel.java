@@ -16,17 +16,22 @@ import java.util.List;
 public class GameModel implements Serializable {
     //添加游戏物体容器
     List<AbstractGameObject> gameObjects;
-    //我方坦克1
-    private Player myTank;
     //碰撞责任链
     ColliderChain cc = new ColliderChain();
     Random r = new Random();
+    //我方坦克1
+    private Player myTank;
+
+    public Player getMyTank(){
+        return myTank;
+    }
+
     public GameModel(){
         initGameObject();
     }
 
     private void initGameObject() {
-        myTank = new Player(50 + r.nextInt(1000), 50 + r.nextInt(600), Direction.U, Group.values()[r.nextInt(Group.values().length)]);
+        myTank = new Player(50 + r.nextInt(1000), 50 + r.nextInt(600), Dir.U, Group.values()[r.nextInt(Group.values().length)]);
         gameObjects = new ArrayList<>();
         /*enemyTanks = new ArrayList<>();
         bullets = new ArrayList<>();
@@ -34,7 +39,7 @@ public class GameModel implements Serializable {
 
         int enemyTanksCount = Integer.parseInt(PropertyMgr.get("initTankCount"));
         for (int i = 0; i < enemyTanksCount; i++) {
-            this.add(new Tank(100 + i * 100, 50, Direction.D, Group.values()[r.nextInt(Group.values().length)]));
+            this.add(new Tank(100 + i * 100, 50, Dir.D, Group.values()[r.nextInt(Group.values().length)]));
         }
         //this.add(new Wall(300,200,400,50));
     }
@@ -59,14 +64,18 @@ public class GameModel implements Serializable {
                 AbstractGameObject go2 = gameObjects.get(j);
                 cc.collide(go1, go2);
             }
+            cc.collide(go1,myTank);
             if (gameObjects.get(i).isLive()) {
                 gameObjects.get(i).paint(g);
             }
 
 
+
+        }
+        if (myTank.isLive()) {
+            myTank.paint(g);
         }
 
-        myTank.paint(g);
     }
 
     //添加游戏物体
@@ -74,15 +83,21 @@ public class GameModel implements Serializable {
         gameObjects.add(go);
     }
 
-    public Player getMyTank(){
-        return myTank;
-    }
-
     public Tank findTankByUUID(UUID id) {
         for (AbstractGameObject o : gameObjects){
             if (o instanceof Tank){
                 Tank t = (Tank)o;
                 if (id.equals(t.getId())) return t;
+            }
+        }
+        return null;
+    }
+
+    public Bullet findBulletByUUID(UUID bulletId) {
+        for (AbstractGameObject o : gameObjects){
+            if (o instanceof Bullet){
+                Bullet b = (Bullet)o;
+                if (bulletId.equals(b.getId())) return b;
             }
         }
         return null;

@@ -1,9 +1,10 @@
 package com.msb.tank;
 
+import com.msb.tank.net.Client;
+import com.msb.tank.net.TankDieMsg;
 import com.msb.tank.net.TankJoinMsg;
 
 import java.awt.*;
-import java.io.Serializable;
 import java.util.Random;
 import java.util.UUID;
 
@@ -15,8 +16,9 @@ import java.util.UUID;
  */
 public class Tank extends AbstractGameObject {
     public static final int SPEED = 5;
-    private int x , y ;
-    private Direction direction = Direction.U;
+    private int x;
+    private int y ;
+    private Dir dir = Dir.U;
     private boolean bU, bD, bL, bR;
     private  boolean moving = true;
     private Group group = Group.GOOD;
@@ -27,27 +29,41 @@ public class Tank extends AbstractGameObject {
     private int h = ResourceMgr.goodTankU.getHeight();
     private Random random = new Random();
     private UUID id ;
-
-    public Tank(int x, int y, Direction direction, Group group) {
+    public Tank(int x, int y, Dir dir, Group group) {
         this.x = x;
         this.y = y;
-        this.direction = direction;
+        this.dir = dir;
         this.group = group;
         this.oldX = x;
         this.oldY = y;
         rect = new Rectangle(x, y, w, h);
     }
-
     public Tank(TankJoinMsg tankJoinMsg) {
         this.x = tankJoinMsg.getX();
         this.y = tankJoinMsg.getY();
-        this.direction = tankJoinMsg.getDir();
+        this.dir = tankJoinMsg.getDir();
         this.moving = tankJoinMsg.isMoving();
         this.group = tankJoinMsg.getGroup();
         this.id = tankJoinMsg.getId();
         this.oldX = x;
         this.oldY = y;
         this.rect = new Rectangle(x, y, w, h);
+    }
+
+    public Dir getDir() {
+        return dir;
+    }
+
+    public void setDir(Dir dir) {
+        this.dir = dir;
+    }
+
+    public boolean isMoving() {
+        return moving;
+    }
+
+    public void setMoving(boolean moving) {
+        this.moving = moving;
     }
 
     public UUID getId() {
@@ -62,8 +78,16 @@ public class Tank extends AbstractGameObject {
         return x;
     }
 
+    public void setX(int x) {
+        this.x = x;
+    }
+
     public int getY() {
         return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
     }
 
     public boolean isLive() {
@@ -80,7 +104,11 @@ public class Tank extends AbstractGameObject {
 
     public void paint(Graphics g) {
         if (!this.isLive()) return;
-        switch (direction) {
+        Color c = g.getColor();
+        g.setColor(Color.yellow);
+        g.drawString(id.toString(),x,y - 10);
+        g.setColor(c);
+        switch (dir) {
             case U:
                 g.drawImage(this.group.equals(Group.GOOD) ?  ResourceMgr.goodTankU : ResourceMgr.badTankU, x, y, null);
                 break;
@@ -110,7 +138,7 @@ public class Tank extends AbstractGameObject {
         if (!moving) return;
         oldX = x;
         oldY = y;
-        switch (direction){
+        switch (dir){
             case U:
                 y -= SPEED;
                 break;
@@ -127,19 +155,19 @@ public class Tank extends AbstractGameObject {
         }
         //坦克边界检测
         tankBoundsCheck();
-        //随机方向
+        /*//随机方向
         randomDir();
         //随机开火
         if (random.nextInt(100) >98){
             this.fire();
-        }
+        }*/
 
     }
 
     private void fire() {//开火
         int bX = x + this.w/2 - Bullet.W/2;
         int bY = y + this.h/2 - Bullet.H/2;
-        TankFrame.INSTANCE.getGm().add(new Bullet(bX,bY, direction,group));
+        TankFrame.INSTANCE.getGm().add(new Bullet(this.id, bX,bY, dir,group));
     }
 
     private void tankBoundsCheck() {//坦克边缘检查
@@ -164,7 +192,7 @@ public class Tank extends AbstractGameObject {
     //随机方向
     private void randomDir(){
         if (random.nextInt(100) >95)
-            this.direction = Direction.randomDir();
+            this.dir = Dir.randomDir();
     }
     public Rectangle getRect(){
         return rect;

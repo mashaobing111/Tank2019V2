@@ -1,9 +1,6 @@
 package com.msb.tank.net;
 
 import com.msb.tank.Dir;
-import com.msb.tank.Group;
-import com.msb.tank.Player;
-import com.msb.tank.TankFrame;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.embedded.EmbeddedChannel;
@@ -11,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author: msb
@@ -19,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @description: com.msb.tank.net
  * @version: 1.0
  */
-class TankJoinMsgTest {
+class TankStopMsgTest {
     @Test
     void encode(){
         //测试使用 只能在本地输出
@@ -27,33 +24,31 @@ class TankJoinMsgTest {
 
         ch.pipeline().addLast(new MsgEncoder());
 
-        Player p = new Player(50,40, Dir.R, Group.BAD);
-        TankJoinMsg tjm = new TankJoinMsg(p);
-
+        TankStopMsg msg = new TankStopMsg(UUID.randomUUID(),50,40);
         //将数据输出
-        ch.writeOutbound(tjm);
+        ch.writeOutbound(msg);
+
         //获取数据
         ByteBuf buf = ch.readOutbound();
+
         //按照写入顺序；
         MsgType msgType = MsgType.values()[buf.readInt()];
         int length = buf.readInt();
+
+        UUID uuid = new UUID(buf.readLong(), buf.readLong());
         int x = buf.readInt();
         int y = buf.readInt();
         //枚举通过获取下标值获取
-        Dir dir = Dir.values()[buf.readInt()];
-        boolean moving = buf.readBoolean();
-        Group group = Group.values()[buf.readInt()];
-        UUID uuid = new UUID(buf.readLong(), buf.readLong());
+
 
         //断言读出数据是否正确
-        assertEquals(MsgType.TankJoin,msgType);
-        assertEquals(33,length);
+        assertEquals(MsgType.TankStop,msgType);
+        assertEquals(24,length);
+        assertEquals(msg.getId(),uuid);
         assertEquals(50,x);
         assertEquals(40,y);
-        assertEquals(Dir.R,dir);
-        assertFalse(moving);
-        assertEquals(Group.BAD,group);
-        assertEquals(p.getId(),uuid);
+
+
     }
 
     @Test
@@ -65,25 +60,22 @@ class TankJoinMsgTest {
         UUID id = UUID.randomUUID();
 
         ByteBuf buf = Unpooled.buffer();
-        buf.writeInt(MsgType.TankJoin.ordinal());
-        buf.writeInt(33);
-        buf.writeInt(5);
-        buf.writeInt(8);
-        buf.writeInt(Dir.D.ordinal());
-        buf.writeBoolean(true);
-        buf.writeInt(Group.GOOD.ordinal());
+        buf.writeInt(MsgType.TankStop.ordinal());
+        buf.writeInt(24);
         buf.writeLong(id.getMostSignificantBits());
         buf.writeLong(id.getLeastSignificantBits());
+        buf.writeInt(50);
+        buf.writeInt(40);
+
 
         ch.writeInbound(buf);
 
-        TankJoinMsg tm = ch.readInbound();
+        TankStopMsg msg = ch.readInbound();
 
-        assertEquals(5,tm.getX());
-        assertEquals(8,tm.getY());
-        assertEquals(Dir.D,tm.getDir());
-        assertTrue(tm.isMoving());
-        assertEquals(Group.GOOD,tm.getGroup());
-        assertEquals(id,tm.getId());
+        assertEquals(id,msg.getId());
+        assertEquals(50,msg.getX());
+        assertEquals(40,msg.getY());
+
+
     }
 }
